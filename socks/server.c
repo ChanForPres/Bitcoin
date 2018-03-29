@@ -36,24 +36,44 @@
      portno = atoi(argv[1]); //2nd arg stdin 
 
      int sock_fd = socket(AF_INET,SOCK_STREAM  ,0); // create socket: address domain(AF_INET) , socket type
-     serv_addr.sin_family = AF_INET;
-     
-     serv_addr.sin_addr.s_addr = htons(INADDR_ANY); // accepts any connection?
+     serv_addr.sin_family = AF_INET; // address family code
+    
+     // IP address is "lower level" : identify system in network, port identifies service in system
+     serv_addr.sin_addr.s_addr = htons(INADDR_ANY); // IP Address of host , machine where server is running  
      serv_addr.sin_port = htons(portno); //htons converts from host byte order to port # in network byte order
      
-     
+     // bind socket to requested address 
+     // remember to cast address to correct type
+     // last arg - size of address to bind to 
      bind(sock_fd,(struct sockaddr *)&serv_addr ,sizeof(serv_addr) );
 
-     listen(sock_fd, 10); // queue size = 10
+     // start socket listening to bound address
+     int ilisten = listen(sock_fd, 10); // queue size = 10
      //accept connection, block process until client connected
-
-     cli_add = accept(sock_fd,(struct sockaddr*)&cli_add ,sizeof(&cli_add) );
+     if (ilisten < 0) {
+         fprintf(stderr, "SOCKET_LISTEN ERR "); // listen failed 
+        }
+     
+     // block process until accept incoming request from client
+     // returns new file descriptor, further communication on new fd  
+     int new_sockfd = accept(sock_fd,(struct sockaddr*)&cli_add ,sizeof(&cli_add) );
+     if (new_sockfd < 0)
+         fprintf(stderr, "UNABLE TO ACCPT CLI");
 
      // after accepted, write the output
+     // read from socket using buffer 
      char buff[11];
      memset((void*)buff, 0, sizeof(buff));
-     read(cli_add ,(void*)buff, 10 ); //read from client max 10 bytes 
-     
+     int iread = read(new_sockfd ,(void*)buff, 10 ); //read from client max 10 bytes 
+     // read blocks until write() from client 
+     // after reading finished, check if success
+     if (iread < 0) 
+         fprintf(stderr, "BUFFER READ ERR!");
+     printf("CLIENT MSG: %s\n",buff);
+     iread = write("MSG RCVD SUCCESS"); // write msg to client
+     if (iread < 0)
+         fprintf(stderr, "UNABLE WRITE->CLIENT");
+
      close(sock_fd);
 
      return 0;
