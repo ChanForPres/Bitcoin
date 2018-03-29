@@ -64,16 +64,22 @@
      // read from socket using buffer 
      char buff[11];
      memset((void*)buff, 0, sizeof(buff));
-     int iread = read(new_sockfd ,(void*)buff, 10 ); //read from client max 10 bytes 
-     // read blocks until write() from client 
-     // after reading finished, check if success
-     if (iread < 0) 
-         fprintf(stderr, "BUFFER READ ERR!");
-     printf("CLIENT MSG: %s\n",buff);
-     iread = write("MSG RCVD SUCCESS"); // write msg to client
-     if (iread < 0)
-         fprintf(stderr, "UNABLE WRITE->CLIENT");
+    
+     // infinite loop, keep forking processes until read stops
+     for (;;) {
+         fork();
+         int iread = read(new_sockfd ,(void*)buff, 10 ); //read from client max 10 bytes 
+             // read blocks until write() from client 
+             // after reading finished, check if success
+             if (iread < 0) 
+                 fprintf(stderr, "BUFFER READ ERR!");
+             printf("CLIENT MSG: %s\n",buff);
+             iread = write("MSG RCVD SUCCESS"); // write msg to client
+             if (iread < 0)
+                 fprintf(stderr, "UNABLE WRITE->CLIENT");
 
+
+     }
      close(sock_fd);
 
      return 0;
