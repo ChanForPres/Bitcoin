@@ -31,7 +31,9 @@ int main(int argc, char *argv[])
      sockfd = socket(AF_INET, SOCK_STREAM, 0);
      if (sockfd < 0) 
         perror("ERROR opening socket");
-     int error = setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR ,NULL,NULL);
+
+     int optval = 1;
+     int error = setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR ,&optval,sizeof(optval) );
      if (error < 0) {
         perror("SETSOCKOPT FAIL: ");
      }
