@@ -60,7 +60,11 @@ int main(int argc, char *argv[])
          error("ERROR reading from socket");
     printf("%s\n",buffer);
 
-    int recur = 1;
+
+    return 0;
+}
+
+/*    int recur = 1;
     char args[] = {1,2}; // args[0] = 1 ...
 
     while (recur) {
@@ -72,6 +76,4 @@ int main(int argc, char *argv[])
         recur = 0;
     }
 
-
-    return 0;
-}
+*/
